@@ -41,4 +41,4 @@ jobs:
       env:
         RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
       with:
-        service: 'tipsen'
+        service: ${{ secrets.SERVICE_ID }}
