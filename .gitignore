@@ -1,0 +1,55 @@
+# Django
+*.log
+*.pot
+*.pyc
+__pycache__/
+local_settings.py
+db.sqlite3
+
+# VS Code
+.vscode/
+
+# PyCharm
+.idea/
+
+# Python
+*.pyc
+*.pyo
+__pycache__/
+
+# macOS
+.DS_Store
+
+# SQLite database files
+*.db
+
+# Environment variables file
+.env
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Dependency directories
+venv/
+env/
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
+
+# Compiled Python files
+*.pyc
+
+# Compiled C extensions
+*.so
+
+# Miscellaneous
+*.bak
+*.swp
+*~
+
+# Jupyter Notebook
+.ipynb_checkpoints/
