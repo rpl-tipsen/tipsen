@@ -38,9 +38,21 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Railway Deploy
-      uses: bervProject/railway-deploy@main
+    - uses: actions/checkout@v3
+
+    - uses: actions/setup-node@v3
+      with:
+        node-version: 16
+
+    - name: Install Railway
+      run: npm i -g @railway/cli
+
+    - name: Install Python packages
+      run: railway run --service ${{ secrets.SERVICE_ID }} pip install -r requirements.txt
       env:
         RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-      with:
-        service: 'tipsen'
+
+    - name: Deploy 
+      run: railway up
+      env:
+        RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
