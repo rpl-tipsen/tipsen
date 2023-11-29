@@ -2,20 +2,18 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 
 
-class CustomUserManager(BaseUserManager):
-    def create_user(self, email, username, password=None, **extra_fields):
-        if not email:
-            raise ValueError('The Email field must be set')
+class AuthUserManager(BaseUserManager):
+    def create_user(self, email, username, password=None, is_admin=False, **extra_fields):
+        if not email or not username:
+            raise ValueError('The Email and Username field must be set')
         email = self.normalize_email(email)
-        user = self.model(email=email, username=username, **extra_fields)
+        user = self.model(email=email, username=username, is_admin=is_admin, **extra_fields)
         user.set_password(password)
         user.save(using=self._db)
         return user
 
     def create_superuser(self, email, username, password=None, **extra_fields):
-        extra_fields.setdefault('is_admin', True)
-
-        return self.create_user(email, username, password, **extra_fields)
+        return self.create_user(email, username, password, is_admin=True, **extra_fields)
 
 
 class AuthUser(AbstractBaseUser):
@@ -23,10 +21,16 @@ class AuthUser(AbstractBaseUser):
     username = models.CharField(max_length=30, unique=True)
     is_admin = models.BooleanField(default=False)
 
-    objects = CustomUserManager()
+    objects = AuthUserManager()
 
-    USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['username']
+    USERNAME_FIELD = 'username'
+    REQUIRED_FIELDS = ['email']
 
     def __str__(self):
-        return self.email
+        return self.username
+    
+
+class UserProfile(models.Model):
+    user = models.OneToOneField(AuthUser, on_delete=models.RESTRICT)
+    fullname = models.CharField(max_length=69)
+    birthdate = models.DateField(default='1970-01-01')
