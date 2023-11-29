@@ -53,6 +53,6 @@ jobs:
         RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
 
     - name: Deploy 
-      run: railway up
+      run: railway up --service ${{ secrets.SERVICE_ID }}
       env:
         RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
