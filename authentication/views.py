@@ -1,6 +1,38 @@
-from django.shortcuts import render
-from django.http import HttpResponse
+# yourapp/views.py
+from django.shortcuts import render, redirect
+from django.contrib.auth import login, authenticate
+from .forms import SignUpForm
+from django.contrib.auth.forms import AuthenticationForm
+from .models import UserProfile
 
 
-def home(request):
-    return HttpResponse("Hello, this is the home page!")
+def signup(request):
+    if request.method == 'POST':
+        form = SignUpForm(request.POST)
+        if form.is_valid():
+            user = form.save(commit=False)
+            user.set_password(form.cleaned_data['password2'])
+            user.save()
+
+            user_profile = UserProfile.objects.create(
+                user=user,
+                fullname=form.cleaned_data['fullname'],
+                birthdate=form.cleaned_data['birthdate']
+            ).save()
+            print('success')
+            return render(request, 'authentication/signup.html', {'success': True})
+    else:
+        form = SignUpForm()
+    return render(request, 'authentication/signup.html', {'form': form})
+
+
+def login_view(request):
+    if request.method == 'POST':
+        form = AuthenticationForm(data=request.POST)
+        if form.is_valid():
+            user = form.get_user()
+            login(request, user)
+            return redirect('home')  # Redirect to the home page or any other desired page
+    else:
+        form = AuthenticationForm()
+    return render(request, 'authentication/login.html', {'form': form})
