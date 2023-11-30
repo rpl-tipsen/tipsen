@@ -19,6 +19,7 @@ def signup(request):
             user.save()
 
             _ = UserProfile.objects.create(
+            user_profile = UserProfile.objects.create(
                 user=user,
                 fullname=form.cleaned_data['fullname'],
                 birthdate=form.cleaned_data['birthdate']
