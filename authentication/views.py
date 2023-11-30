@@ -3,7 +3,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import login, logout
 from .forms import SignUpForm
 from django.contrib.auth.forms import AuthenticationForm
-from .models import UserProfile
+from userprofile.models import UserProfile
 
 
 def signup(request):
