@@ -1,6 +1,6 @@
 # yourapp/views.py
 from django.shortcuts import render, redirect
-from django.contrib.auth import login, authenticate, logout
+from django.contrib.auth import login, logout
 from .forms import SignUpForm
 from django.contrib.auth.forms import AuthenticationForm
 from .models import UserProfile
@@ -19,7 +19,6 @@ def signup(request):
             user.save()
 
             _ = UserProfile.objects.create(
-            user_profile = UserProfile.objects.create(
                 user=user,
                 fullname=form.cleaned_data['fullname'],
                 birthdate=form.cleaned_data['birthdate']
