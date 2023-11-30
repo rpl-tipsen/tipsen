@@ -29,8 +29,3 @@ class AuthUser(AbstractBaseUser):
     def __str__(self):
         return self.username
     
-
-class UserProfile(models.Model):
-    user = models.OneToOneField(AuthUser, on_delete=models.RESTRICT)
-    fullname = models.CharField(max_length=69)
-    birthdate = models.DateField(default='1970-01-01')

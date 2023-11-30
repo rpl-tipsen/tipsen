@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+
+{% block meta %}
+<title>Create Address</title>
+{% endblock meta %}
+
+{% block content %}
+
+<section class="bg-gray-50 dark:bg-gray-900">
+    <div class="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
+        <a href="#" class="flex items-center mb-6 text-2xl font-semibold text-gray-900 dark:text-white">
+            <img class="w-8 h-8 mr-2" src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/logo.svg" alt="logo">
+            Tambah alamat
+        </a>
+        {% if success %}
+        <div class="w-full sm:max-w-md p-6 mb-4 rounded-md bg-emerald-500 font-semibold text-gray-700 text-[16px]">
+            {{ message }}
+        </div>
+        <script>
+            function redirect() {
+                window.location.href = '/user/profile/'
+            }
+            setTimeout(
+                redirect
+                , 2000)
+        </script>
+        {% endif %}
+
+        {% if error %}
+        <div class="w-full sm:max-w-md p-6 mb-4 rounded-md bg-red-500 font-semibold text-gray-700 text-[18px]">
+            {{ message }}
+        </div>
+        <script>
+            function redirect() {
+                window.location.href = '/user/profile/'
+            }
+            setTimeout(
+                redirect
+                , 2000)
+        </script>
+        {% endif %}
+        <div
+            class="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
+            <div class="p-6 space-y-4 md:space-y-6 sm:p-8">
+
+
+                <form class="space-y-4 md:space-y-6 text-[16px]" method="POST" action="{{ url }}">
+                    {% csrf_token %}
+                    <div>
+                        <label for="receiver_name"
+                            class="block mb-2  font-medium text-gray-900 dark:text-white">Receiver name</label>
+                        <input type="text" name="receiver_name" id="receiver_name"
+                            class="bg-gray-50 border border-gray-300 text-gray-900 sm: rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                            placeholder="NeoZap" required=""
+                            value="{{ address.receiver_name }}">
+                    </div>
+                    <div>
+                        <label for="phone_number"
+                            class="block mb-2  font-medium text-gray-900 dark:text-white">Phone</label>
+                        <input type="phone_number" name="phone_number" id="phone_number"
+                            class="bg-gray-50 border border-gray-300 text-gray-900 sm: rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                            placeholder="+62909090" required=""
+                            value="{{ address.phone_number }}">
+                    </div>
+                    <div>
+                        <label for="address"
+                            class="block mb-2  font-medium text-gray-900 dark:text-white">address</label>
+                        <input type="address" name="address" id="address"
+                            class="bg-gray-50 border border-gray-300 text-gray-900 sm: rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                            placeholder="X street no. 69" required=""
+                            value="{{ address.address }}">
+                    </div>
+                    <div>
+                        <label for="city" class="block mb-2  font-medium text-gray-900 dark:text-white">City</label>
+                        <input type="text" name="city" id="city"
+                            class="bg-gray-50 border border-gray-300 text-gray-900 sm: rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                            placeholder="bekasi" required=""
+                            value="{{ address.city }}">
+                    </div>
+                    <div>
+                        <label for="postal_code"
+                            class="block mb-2  font-medium text-gray-900 dark:text-white">postal_code</label>
+                        <input type="text" name="postal_code" id="postal_code" placeholder="00000"
+                            class="bg-gray-50 border border-gray-300 text-gray-900 sm: rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                            required=""
+                            value="{{ address.postal_code }}">
+                    </div>
+                    <ul>
+                        {% if form.errors %}
+                        {% for field in form %}
+                        {% for error in field.errors %}
+                        <li>
+                            <div class="text-red-500 font-semibold text-[12px]">{{ error|escape }}</div>
+                        </li>
+                        {% endfor %}
+                        {% endfor %}
+                        {% for error in form.non_field_errors %}
+                        <li>
+                            <div class="text-red-500 font-semibold text-[12px]">{{ error|escape }}</div>
+                        </li>
+                        {% endfor %}
+                        {% endif %}
+                    </ul>
+                    <button type="submit"
+                        class="w-full text-white bg-indigo-600 font-semibold hover:bg-indigo-700 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg px-5 py-2.5 text-center">Simpan</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock content %}
