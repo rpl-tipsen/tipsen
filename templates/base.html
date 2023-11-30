@@ -1,14 +1,63 @@
 {% load static %}
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://cdn.tailwindcss.com"></script>
-    {% block meta %}
-    {% endblock meta %}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/daisyui@4.4.14/dist/full.min.css" rel="stylesheet" type="text/css" />
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  {% block meta %}
+  {% endblock meta %}
 </head>
+
 <body>
-    {% block content %}
-    {% endblock content %}
+
+
+  <nav class="navbar bg-white fixed flex flex-row items-center justify-start px-4">
+    <div class="">
+      <a class="">TipSen</a>
+    </div>
+    <div class="gap-2">
+      <form class="form-control w-[40vw]">
+        <input type="text" placeholder="Search" class="input input-bordered w-24 md:w-auto" />
+      </form>
+      {% if user.is_authenticated %}
+      <div class="dropdown dropdown-end">
+        <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar">
+          <div class="w-10 rounded-full">
+            <img alt="Tailwind CSS Navbar component"
+              src="https://daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" />
+          </div>
+        </div>
+        <ul class="mt-3 z-[1] p-2 shadow menu menu-sm dropdown-content bg-base-100 rounded-box w-52">
+          <li>
+            <a class="justify-between">
+              Profile
+              <span class="badge">New</span>
+            </a>
+          </li>
+          <li><a>Settings</a></li>
+          <li><a href="{% url 'logout' %}">Logout</a></li>
+        </ul>
+        {% else %}
+        <div>
+          <a href="{% url 'login' %}" class="btn bg-indigo-600 text-white">
+            Login
+          </a>
+          <a href="{% url 'signup' %}" class="btn bg-neutral text-indigo-600 hover:text-white hover:bg-indigo-600 transition-all duration-100">
+            Signup
+          </a>
+        </div>
+        {% endif %}
+       
+      </div>
+    </div>
+  </nav>
+
+  {% block content %}
+  {% endblock content %}
 </body>
+
 </html>
