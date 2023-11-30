@@ -32,7 +32,8 @@ jobs:
         python manage.py test
 
   railway deploy:
-
+    dependencies:
+      - test
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     steps:
