@@ -1,11 +1,16 @@
 from django.shortcuts import render
+from products.models import Product
 
 # Create your views here.
 
 
 def home(request):
+    
+    
+    query = request.GET.get('query', '')
 
-    user = request.user
-
-    print(user)
-    return render(request, 'home/index.html', {'user': user})
+    if query == '':
+        products = Product.objects.all()
+    else:
+        products = Product.objects.filter(name__icontains=query)
+    return render(request, 'home/index.html', {'products': products})

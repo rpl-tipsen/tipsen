@@ -39,7 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'authentication',
     'home',
-    'userprofile'
+    'userprofile',
+    'products'
 ]
 
 MIDDLEWARE = [
@@ -51,7 +52,6 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
-
 ROOT_URLCONF = 'tipsen.urls'
 
 TEMPLATES = [
