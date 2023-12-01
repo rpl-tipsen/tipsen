@@ -34,7 +34,7 @@ jobs:
       run: |
         python manage.py test
 
-  railway deploy:
+  railway:
     if: ${{ github.event_name == 'push' }}
     needs: test
     runs-on: ubuntu-latest
