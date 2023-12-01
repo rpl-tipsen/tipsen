@@ -25,8 +25,13 @@ SECRET_KEY = 'django-insecure-f=#=4_(skom8*n*2r(#*+o%_ekq%c!o=sbxwtem31n7@=z!c01
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = ["localhost", 'tipsen.monemone.site']
 
+CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:3030',
+    'https://tipsen.monemone.site'
+]
 
 # Application definition
 
@@ -39,7 +44,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'authentication',
     'home',
-    'userprofile'
+    'userprofile',
+    'products',
+    'corsheaders'
 ]
 
 MIDDLEWARE = [
@@ -50,8 +57,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
-
 ROOT_URLCONF = 'tipsen.urls'
 
 TEMPLATES = [
