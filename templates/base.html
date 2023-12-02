@@ -14,9 +14,9 @@
 <body class="bg-gray-50">
 
 
-  <nav class="navbar bg-white fixed flex flex-row items-center justify-start px-4">
+  <nav class="navbar bg-white fixed flex flex-row items-center justify-between px-4">
     <div class="">
-      <a class="">TipSen</a>
+      <a href="{% url 'home' %}">TipSen</a>
     </div>
     <div class="gap-2">
       {% if request.user.is_authenticated %}
