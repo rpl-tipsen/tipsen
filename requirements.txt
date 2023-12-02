@@ -1,5 +1,6 @@
-Django
-psycopg2-binary
+Django==4.2.7
+psycopg2-binary==2.9.9
 gunicorn
-django-cors-headers
-supabase
+django-cors-headers==4.3.1
+supabase==1.0.4
+Pillow==9.5.0
