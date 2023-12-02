@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+
+{% block meta %}
+<title>
+    Tipsen | Pesanan Khusus
+</title>
+{% endblock meta %}
+
+{% block content %}
+
+<section class="bg-gray-50 dark:bg-gray-900">
+    <div class="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
+        <a href="#" class="flex items-center mb-6 text-2xl font-semibold text-gray-900 dark:text-white">
+            <img class="w-8 h-8 mr-2" src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/logo.svg" alt="logo">
+            Signup
+        </a>
+        {% if success %}
+        <div class="w-full sm:max-w-md p-6 mb-4 rounded-md bg-emerald-500 font-semibold text-gray-700 text-[16px]">
+            Your special order has been made
+        </div>
+        {% endif %}
+        <div
+            class="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
+            <div class="p-6 space-y-4 md:space-y-6 sm:p-8">
+                <form class="space-y-4 md:space-y-6 text-[16px]" method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div>
+                        <label for="product_link" class="block mb-2  font-medium text-gray-900 dark:text-white">Product
+                            Link</label>
+                        <input type="text" name="product_link" id="product_link"
+                            class="bg-gray-50 border border-gray-300 text-gray-900 sm: rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                            placeholder="https://your.product.link" required="">
+                    </div>
+                    <div>
+                        <label for="amount_paid" class="block mb-2  font-medium text-gray-900 dark:text-white">Amount
+                            Paid</label>
+                        <input type="number" name="amount_paid" id="amount_paid"
+                            class="bg-gray-50 border border-gray-300 text-gray-900 sm: rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                            placeholder="69000" required="">
+                    </div>
+                    <div>
+                        <label for="description"
+                            class="block mb-2  font-medium text-gray-900 dark:text-white">Description</label>
+                        <textarea name="description" id="description"
+                            class="bg-gray-50 border border-gray-300 text-gray-900 sm: rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                            placeholder="warna hijau, include bonus" required="">
+                        </textarea>
+                    </div>
+                    <div>
+                        <label for="bank" class="block mb-2  font-medium text-gray-900 dark:text-white">Pembayaran ke</label>
+                        <select type="text" name="bank" id="bank" placeholder="" class="bg-gray-50 border border-gray-300 text-gray-900 sm: rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required="">
+                        {% for bank in banks %}
+                        <option value="{{bank}}">Bank {{bank}}</option>
+                        {% endfor %}
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="address" class="block mb-2  font-medium text-gray-900 dark:text-white">Alamat</label>
+                        <select type="text" name="address" id="address" placeholder="" class="bg-gray-50 border border-gray-300 text-gray-900 sm: rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required="">
+                        {% for address in addresses %}
+                        <option value="{{address.id}}" class="w-full p-2 flex flex-col items-start justify-center">
+                            <p>{{address.receiver_name}}</p>
+                            <p>{{address.phone_number}}</p>
+                            <p>{{address.address}}, {{address.city}} {{ address.postal_code }}</p>
+                        </option>
+                        {% endfor %}
+                        </select>
+                    </div>
+                    <label for="id_image">Bukti Pembayaran</label>
+                    <input type="file" name="image" id="id_image" accept="image/jpeg, image/png" required>
+    
+                    <ul>
+                        {% if form.errors %}
+                            {% for field in form %}
+                                {% for error in field.errors %}
+                                    <li><div class="text-red-500 font-semibold text-[12px]">{{ error|escape }}</div></li>
+                                {% endfor %}
+                            {% endfor %}
+                            {% for error in form.non_field_errors %}
+                                <li><div class="text-red-500 font-semibold text-[12px]">{{ error|escape }}</div></li>
+                            {% endfor %}
+                        {% endif %}
+                    </ul>
+                    {% if addresses|length < 1%}
+                    <p class="text-xl font-semibold text-white pb-4">Anda belum memiliki alamat </p>
+                    <a href="{% url 'user_profile' %}" class="w-full text-white bg-indigo-600 font-semibold hover:bg-indigo-700 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg px-5 py-2.5 text-center w-full">Tambah Alamat</a>
+                    {% else %}
+                    <button type="submit" class="w-full text-white bg-indigo-600 font-semibold hover:bg-indigo-700 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg px-5 py-2.5 text-center">Sign up</button>
+                    {% endif %}
+                </form>
+            </div>
+        </div>
+    </div>
+  </section>
+{% endblock content %}
