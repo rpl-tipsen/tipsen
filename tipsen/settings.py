@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-f=#=4_(skom8*n*2r(#*+o%_ekq%c!o=sbxwtem31n7@=z!c01
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["localhost", 'tipsen.monemone.site']
+ALLOWED_HOSTS = ["localhost", 'tipsen.monemone.site', '127.0.0.1']
 
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOWED_ORIGINS = [
@@ -48,6 +48,7 @@ CSRF_TRUSTED_ORIGINS = [
     'http://127.0.0.1:8000',
     'https://tipsen.monemone.site'
 ]
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # Application definition
 
