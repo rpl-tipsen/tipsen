@@ -10,8 +10,6 @@ def user_profile(request):
     user_profile = UserProfile.objects.get(user=request.user._wrapped)
     addresses = Address.objects.filter(user=request.user._wrapped)
 
-    print(addresses[0].__dict__)
-
     return render(
         request=request,
         template_name="userprofile/profile.html",

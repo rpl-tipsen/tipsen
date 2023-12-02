@@ -29,7 +29,12 @@ ALLOWED_HOSTS = ["localhost", 'tipsen.monemone.site']
 
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOWED_ORIGINS = [
-    'http://localhost:3030',
+    'http://localhost:8000',
+    'https://tipsen.monemone.site'
+]
+
+CSRF_ALLOWED_ORIGINS = [
+    'http://localhost:8000',
     'https://tipsen.monemone.site'
 ]
 
@@ -46,6 +51,8 @@ INSTALLED_APPS = [
     'home',
     'userprofile',
     'products',
+    'order',
+    'payment',
     'corsheaders'
 ]
 
@@ -140,3 +147,8 @@ STATIC_ROOT = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGIN_URL = '/authentication/login/'
+
+SUPABASE = {
+    'url': 'https://hvrgaqmrzkjidxhppsjj.supabase.co',
+    'key': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh2cmdhcW1yemtqaWR4aHBwc2pqIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTcwMTE4NDA3OSwiZXhwIjoyMDE2NzYwMDc5fQ.IYjVjILFUG4Vgf6sQGhSu6GaecsRP9JL5IFsRiGHOMI'
+}
