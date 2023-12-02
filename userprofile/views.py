@@ -10,12 +10,13 @@ def user_profile(request):
     user_profile = UserProfile.objects.get(user=request.user._wrapped)
     addresses = Address.objects.filter(user=request.user._wrapped)
 
-    print(addresses[0].__dict__)
+    # print(addresses[0].__dict__)
 
     return render(
         request=request,
         template_name="userprofile/profile.html",
-        context={"user": {"auth": request.user._wrapped, "profile": user_profile}, "addresses": addresses},
+        context={"user": {"auth": request.user._wrapped,
+                          "profile": user_profile}, "addresses": addresses},
     )
 
 
@@ -33,7 +34,8 @@ def create_address(request):
                 return render(
                     request=request,
                     template_name="userprofile/address.html",
-                    context={"error": True, "message": "Jumlah alamat sudah maksimum (3 alamat)"},
+                    context={
+                        "error": True, "message": "Jumlah alamat sudah maksimum (3 alamat)"},
                 )
 
             address.user = request.user._wrapped
@@ -41,7 +43,8 @@ def create_address(request):
             return render(
                 request=request,
                 template_name="userprofile/address.html",
-                context={"success": True, "message": "Berhasil menyimpan alamat"},
+                context={"success": True,
+                         "message": "Berhasil menyimpan alamat"},
             )
 
     form = AddressForm()
@@ -82,14 +85,16 @@ def update_address(request, address_id: int):
             return render(
                 request=request,
                 template_name="userprofile/address.html",
-                context={"success": True, "message": "Berhasil menyimpan alamat"},
+                context={"success": True,
+                         "message": "Berhasil menyimpan alamat"},
             )
 
     form = AddressForm()
     return render(
         request=request,
         template_name="userprofile/address.html",
-        context={"form": form, "url": reverse("update_address", kwargs={"address_id": address_id}), "address": address},
+        context={"form": form, "url": reverse(
+            "update_address", kwargs={"address_id": address_id}), "address": address},
     )
 
 

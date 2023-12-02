@@ -1,0 +1,26 @@
+{% extends 'base.html' %} 
+
+{% block meta %}
+    <title>Tipsen | All Available Products</title>
+{% endblock meta %} 
+
+{% block content %}
+
+  <section class="w-full h-[35vh] flex flex-col justify-start items-center">
+    <div class="w-4/5 h-full py-2 rounded-lg shadow-lg">
+        BANNER
+    </div>
+    <section class="w-full my-4">
+        <section class="w-11/12 grid grid-cols-5">
+            {% for _product in products %}
+                <a class="bg-white rounded-md" href="{% url 'product' product_id=_product.id %}">
+                    <img src="{{_product.image_link}}" alt="{{_product.name}}" class="w-full"/>
+                    <p>{{ _product.name }}</p>
+                    <p>{{ _product.price }}</p>
+                </a>
+            {% endfor %}
+        </section>
+
+    </section>
+  </section>
+{% endblock content %}
