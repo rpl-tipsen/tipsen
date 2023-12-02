@@ -12,11 +12,11 @@
     </div>
     <section class="w-full my-4">
         <section class="w-11/12 grid grid-cols-5">
-            {% for _product in products %}
-                <a class="bg-white rounded-md" href="{% url 'product' product_id=_product.id %}">
-                    <img src="{{_product.image_link}}" alt="{{_product.name}}" class="w-full"/>
-                    <p>{{ _product.name }}</p>
-                    <p>{{ _product.price }}</p>
+            {% for product_ in products %}
+                <a class="bg-white rounded-md" href="{% url 'product' product_id=product_.id %}">
+                    <img src="{{product_.image_link}}" alt="{{product_.name}}" class="w-full"/>
+                    <p>{{ product_.name }}</p>
+                    <p>{{ product_.price }}</p>
                 </a>
             {% endfor %}
         </section>

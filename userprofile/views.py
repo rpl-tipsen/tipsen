@@ -59,7 +59,7 @@ def create_address(request):
 def update_address(request, address_id: int):
     address = Address.objects.get(id=address_id)
 
-    if not address and address.user_id != request.user._wrapped.id:
+    if not address or address.user_id != request.user._wrapped.id:
         return render(
             request=request,
             template_name="userprofile/address.html",

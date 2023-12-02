@@ -1,14 +1,26 @@
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render
+from django.shortcuts import redirect, render
+from payment.models import Payment
 from .models import Product
 from .forms import *
+from order.models import Order
 from userprofile.models import Address
+from order.forms import ImageForm
+from io import BufferedReader
+import supabase
+import mimetypes
+import uuid
+from tipsen.settings import SUPABASE
+
+
+BUCKET_NAME = "payment"
+sb = supabase.create_client(
+    supabase_url=SUPABASE["url"], supabase_key=SUPABASE["key"])
 
 
 def products(request):
     products = Product.objects.all()
-    print(products)
 
     return render(
         request, "products/index.html", context={"products": products}
@@ -17,187 +29,150 @@ def products(request):
 
 def product(request, product_id):
     product = Product.objects.get(id=product_id)
-    # if not product:
-    #     return render(request, "not_found.html")
+    if not product:
+        return redirect("home")
 
     return render(
         request, "products/detail.html", context={"product": product}
     )
 
 
-def order_before_payment(request, product_id):
+@login_required
+def order_product(request, product_id):
     product = Product.objects.get(id=product_id)
+    if not product:
+        return redirect("home")
+
     addresses = Address.objects.all()
-    # if not product:
-    #     return render(request, "not_found.html")
+    banks = ["BCA", "Mandiri", "BNI"]
+
     if request.method == 'POST':
-        if 'next' in request.POST:
+        print(request.POST)
+        if request.POST.get('step') == 'first':
             first_form = OrderFirstForm(request.POST)
             if first_form.is_valid():
-                address = first_form.cleaned_data['address']
+                address_id = first_form.cleaned_data['address_id']
+                address = Address.objects.get(id=address_id)
+                if not address or address.user_id != request.user._wrapped.id:
+                    return render(
+                        request,
+                        "products/form-before-payment.html",
+                        context={
+                            "product": product, "addresses": addresses,
+                            "error": True,
+                            "message": f"couldn't find address with id {address_id}",
+                        },
+                    )
                 quantity = first_form.cleaned_data['quantity']
-                # Calculate total price
                 total_price = product.price * quantity
+                print(total_price, quantity)
+
                 # Save order data in session
-                request.session['address'] = address
+                request.session['address_id'] = address_id
                 request.session['quantity'] = quantity
                 request.session['total_price'] = total_price
                 return render(
-                    request, "products/form-after-payment.html", context={"product": product, "addresses": addresses, "second_form": OrderSecondForm}
+                    request, "products/form-after-payment.html",
+                    context={"product": product, "addresses": addresses,
+                             "banks": banks}
                 )
-        elif 'submit' in request.POST:
+            else:
+                print(first_form.errors)
+                return render(
+                    request, "products/form-before-payment.html",
+                    context={"product": product, "addresses": addresses,
+                             "form": first_form}
+                )
+        else:
             second_form = OrderSecondForm(request.POST)
             if second_form.is_valid():
-                payment_method = second_form.cleaned_data['payment_method']
-                payment_reference = second_form.cleaned_data['payment_reference']
-                # Retrieve order data from session
-                address = request.session.get('address')
-                quantity = request.session.get('quantity')
-                total_price = request.session.get('total_price')
-                # Save order in database
-                # order = Order.objects.create(
-                #     product=product,
-                #     quantity=quantity,
-                #     address=address,
-                #     total_price=total_price,
-                #     # Assign payment details
-                #     payment_method=payment_method,
-                #     payment_reference=payment_reference
-                # )
-                del request.session['address']
-                del request.session['quantity']
-                del request.session['total_price']
-                # return redirect('order_confirmation')
-    else:
-        first_form = OrderFirstForm()
-        second_form = OrderSecondForm()
-    return render(
-        request, "products/form-before-payment.html", context={"product": product, "addresses": addresses, "first_form": first_form}
-    )
+                try:
+                    # Retrieve order data from session
+                    address_id = request.session.get('address_id')
+                    quantity = request.session.get('quantity')
+                    total_price = request.session.get('total_price')
 
+                    address = Address.objects.get(id=address_id)
+                    if not address or address.user_id != request.user._wrapped.id:
+                        return render(
+                            request,
+                            "products/form-before-payment.html",
+                            context={
+                                "product": product, "addresses": addresses,
+                                "error": True,
+                                "message": f"couldn't find address with id {address_id}",
+                            },
+                        )
 
-def order_after_payment(request, product_id, address_id):
-    product = Product.objects.get(id=product_id)
-    address = Address.objects.get(id=address_id)
-    # if not product or not address:
-    #     return render(request, "not_found.html")
-    return render(
-        request, "products/form-after-payment.html", context={"product": product, "address": address}
-    )
+                    payment = handle_payment_creation(request)
 
+                    Order.objects.create(
+                        product=product,
+                        quantity=quantity,
+                        status="Menunggu Verifikasi Pembayaran",
+                        description="",
+                        address=address,
+                        subtotal=total_price,
+                        user=request.user._wrapped,
+                        payment=payment
+                    ).save()
 
-@login_required
-def user_profile(request):
-    user_profile = UserProfile.objects.get(user=request.user._wrapped)
-    addresses = Address.objects.filter(user=request.user._wrapped)
+                    del request.session['address_id']
+                    del request.session['quantity']
+                    del request.session['total_price']
 
-    # print(addresses[0].__dict__)
-
-    return render(
-        request=request,
-        template_name="userprofile/profile.html",
-        context={"user": {"auth": request.user._wrapped,
-                          "profile": user_profile}, "addresses": addresses},
-    )
-
-
-@login_required
-def create_address(request):
-    if request.method == "POST":
-        form = AddressForm(request.POST)
-
-        if form.is_valid():
-            address = form.save(commit=False)
-
-            addresses = Address.objects.filter(user=request.user._wrapped)
-
-            if len(addresses) >= 3:
+                    # TODO: ganti redirect ke "pesanan saya"
+                    return redirect('home')
+                except Exception as e:
+                    return render(
+                        request, "products/form-after-payment.html",
+                        context={"product": product, "addresses": addresses,
+                                 "exception_error": {e}, "banks": banks}
+                    )
+            else:
+                print(second_form.errors)
                 return render(
-                    request=request,
-                    template_name="userprofile/address.html",
-                    context={
-                        "error": True, "message": "Jumlah alamat sudah maksimum (3 alamat)"},
+                    request, "products/form-after-payment.html",
+                    context={"product": product, "addresses": addresses,
+                             "form": OrderSecondForm, "banks": banks}
                 )
 
-            address.user = request.user._wrapped
-            address.save()
-            return render(
-                request=request,
-                template_name="userprofile/address.html",
-                context={"success": True,
-                         "message": "Berhasil menyimpan alamat"},
-            )
-
-    form = AddressForm()
     return render(
-        request=request,
-        template_name="userprofile/address.html",
-        context={"form": form, "url": reverse("create_address")},
+        request, "products/form-before-payment.html", context={"product": product, "addresses": addresses}
     )
 
 
-@login_required
-def update_address(request, address_id: int):
-    address = Address.objects.get(id=address_id)
+def handle_payment_creation(request):
+    form = ImageForm(request.POST, request.FILES)
+    if form.is_valid():
+        image = form.cleaned_data["image"]
 
-    if not address and address.user_id != request.user._wrapped.id:
-        return render(
-            request=request,
-            template_name="userprofile/address.html",
-            context={
-                "url": reverse("update_address", kwargs={"address_id": address_id}),
-                "address": address,
-                "error": True,
-                "message": f"couldn't find address with id {address_id}",
-            },
+        # Initialize Supabase client
+
+        # Read the image file into memory
+        image_data = BufferedReader(image.file)
+        random_filename = str(uuid.uuid4()) + "_" + image.name
+
+        content_type, encoding = mimetypes.guess_type(image.name)
+        file_options = {"content-type": content_type} if content_type else {}
+
+        # Upload the image to Supabase Bucket Storage
+        response = sb.storage.from_(BUCKET_NAME).upload(
+            path=random_filename, file=image_data, file_options=file_options
+        )
+        if response.status_code == 201 or response.status_code == 200:
+            image_link = f"{SUPABASE['url']}/storage/v1/object/public/{BUCKET_NAME}/{random_filename}"
+        else:
+            return "Failed to create payment"
+
+        total_price = request.session.get('total_price')
+
+        payment = Payment.objects.create(
+            payment_reference_number=request.POST['payment_reference_number'],
+            jumlah=total_price,
+            bank=request.POST['bank'],
+            image_link=image_link,
         )
 
-    if request.method == "POST":
-        form = AddressForm(request.POST)
-        if form.is_valid():
-            new_address: Address = form.save(commit=False)
-            address.receiver_name = new_address.receiver_name
-            address.phone_number = new_address.phone_number
-            address.address = new_address.address
-            address.city = new_address.city
-            address.postal_code = new_address.postal_code
-            address.save()
-
-            return render(
-                request=request,
-                template_name="userprofile/address.html",
-                context={"success": True,
-                         "message": "Berhasil menyimpan alamat"},
-            )
-
-    form = AddressForm()
-    return render(
-        request=request,
-        template_name="userprofile/address.html",
-        context={"form": form, "url": reverse(
-            "update_address", kwargs={"address_id": address_id}), "address": address},
-    )
-
-
-@login_required
-def delete_address(request, address_id):
-    address = Address.objects.get(id=address_id)
-
-    if not address and address.user_id != request.user._wrapped.id:
-        return render(
-            request=request,
-            template_name="userprofile/address.html",
-            context={
-                "url": reverse("update_address", kwargs={"address_id": address_id}),
-                "address": address,
-                "error": True,
-                "message": f"couldn't find address with id {address_id}",
-            },
-        )
-
-    address.delete()
-    return render(
-        request=request,
-        template_name="userprofile/profile.html",
-        context={"success": True, "message": "Berhasil menghapus alamat"},
-    )
+        payment.save()
+        return payment

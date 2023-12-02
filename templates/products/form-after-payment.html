@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block meta %}
+<title>
+    Tipsen | Membuat Pesanan
+</title>
+{% endblock meta %}
+
+{% block content %}
+    <div class="login w-full flex flex-col items-center py-4 bg-gray-50 dark:bg-gray-900">
+        <a href="#" class="flex items-center mb-6 text-2xl font-semibold text-gray-900 dark:text-white">
+            <img class="w-8 h-8 mr-2" src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/logo.svg" alt="logo">
+            Memesan {{product.name}}
+        </a>
+        <div
+            class="h-full w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
+            <div class="p-6 space-y-4 md:space-y-6 sm:p-8">
+                <form class="space-y-4 md:space-y-6 text-[16px]" method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div>
+                        <label for="description"
+                            class="block mb-2  font-medium text-gray-900 dark:text-white">Deskripsi</label>
+                        <textarea name="description" id="description"
+                            class="bg-gray-50 border border-gray-300 text-gray-900 sm: rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                            placeholder="warna hijau, include bonus" required="">
+                        </textarea>
+                    </div>
+
+                    <div>
+                        <label for="bank" class="block mb-2  font-medium text-gray-900 dark:text-white">Pembayaran ke</label>
+                        <select type="text" name="bank" id="bank" placeholder="" class="bg-gray-50 border border-gray-300 text-gray-900 sm: rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required="">
+                        {% for bank in banks %}
+                        <option value="{{bank}}">Bank {{bank}}</option>
+                        {% endfor %}
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="id_payment_reference_number" class="block mb-2  font-medium text-gray-900 dark:text-white">Nomor Referensi Pembayaran</label>
+                        <input type="text" name="payment_reference_number" id="id_payment_reference_number">
+
+                        <label for="id_image" class="block mb-2  font-medium text-gray-900 dark:text-white">Upload Bukti Pembayaran</label>
+                        <input type="file" name="image" id="id_image" accept="image/jpeg, image/png">
+                    </div>
+    
+                    <ul>
+                        {% if form.errors %}
+                            {% for field in form %}
+                                {% for error in field.errors %}
+                                    <li><div class="text-red-500 font-semibold text-[12px]">{{ error|escape }}</div></li>
+                                {% endfor %}
+                            {% endfor %}
+                            {% for error in form.non_field_errors %}
+                                <li><div class="text-red-500 font-semibold text-[12px]">{{ error|escape }}</div></li>
+                            {% endfor %}
+                        {% endif %}
+                    </ul>
+
+                    <button type="submit" class="w-full text-white bg-indigo-600 font-semibold hover:bg-indigo-700 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg px-5 py-2.5 text-center">Pesan</button>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock content %}
