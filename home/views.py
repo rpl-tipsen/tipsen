@@ -10,4 +10,4 @@ def home(request):
     else:
         products = Product.objects.filter(name__icontains=query)
     return render(request, "home/index.html", {"products": products})
-
+  
