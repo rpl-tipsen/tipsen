@@ -113,7 +113,7 @@ def order_product(request, product_id):
     if not product:
         return redirect("home")
 
-    addresses = Address.objects.all()
+    addresses = Address.objects.filter(user=request.user._wrapped)
     banks = ["BCA", "Mandiri", "BNI"]
 
     if request.method == "POST":
