@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from django.contrib.auth.decorators import login_required
 from userprofile.models import Address
 from .models import Order
@@ -16,6 +16,33 @@ from tipsen.settings import SUPABASE
 BUCKET_NAME = "payment"
 
 sb = supabase.create_client(supabase_url=SUPABASE["url"], supabase_key=SUPABASE["key"])
+
+
+@login_required
+def verify_paid_order(request, order_id):
+    user = request.user
+    if not user.is_admin:
+        return redirect("home")
+
+    order = Order.objects.filter(user=request.user._wrapped, id=order_id)
+    if not order:
+        return render(request, "", context={"error": f"Order dengan id {order_id} tidak ditemukan"})
+    order.status = "Terverifikasi"
+
+    return redirect("show_all_payments")
+
+@login_required
+def reject_unfully_paid_order(request, order_id):
+    user = request.user
+    if not user.is_admin:
+        return redirect("home")
+    
+    order = Order.objects.filter(user=request.user._wrapped, id=order_id)
+    if not order:
+        return render(request, "", context={"error": f"Order dengan id {order_id} tidak ditemukan"})
+    order.delete()
+
+    return redirect("show_all_payments")
 
 
 @login_required
