@@ -108,3 +108,26 @@ def handle_payment_creation(request):
 
         payment.save()
         return payment
+
+@login_required
+def manage_orders(request):
+    if not request.user.is_admin:
+        return redirect("home")
+    
+    orders = Order.objects.all().order_by('id')
+
+    if request.method == "POST":
+        query = request.POST.get('query')
+        order = Order.objects.get(id=request.POST.get('order_id'))
+        
+        if order:
+            if (query == "update-status"):
+                status = request.POST.get('status')
+                order.status = status
+                order.save()
+            elif (query == "add-desc"):
+                description = request.POST.get('description')
+                order.description = description
+                order.save()
+
+    return render(request=request, template_name="order/manage_orders.html", context={"orders": orders})

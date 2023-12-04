@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+
+{% block meta %}
+<title>
+    Tipsen | Pesanan Khusus
+</title>
+{% endblock meta %}
+
+{% block content %}
+<table class="table-auto bg-gray-700 text-center">
+    <thead>
+        <tr>
+            <td scope="col" class="px-5 py-2">Timestamp</td>
+            <td scope="col" class="px-5 py-2">Payment No.</td>
+            <td scope="col" class="px-5 py-2">User</td>
+            <td scope="col" class="px-5 py-2">Alamat</td>
+            <td scope="col" class="px-5 py-2">Produk</td>
+            <td scope="col" class="px-5 py-2">Qty.</td>
+            <td scope="col" class="px-5 py-2">Subtotal</td>
+            <td scope="col" class="px-5 py-2">Status</td>
+            <td scope="col" class="px-5 py-2">Desc.</td>
+        </tr>
+    </thead>
+    <tbody>
+        {% for o in orders %}
+        <tr {% if o.is_special_request %} class="bg-gray-800" {% endif %}>
+            <td scope="col" class="px-5 py-2">{{o.timestamp}}</td>
+            <td scope="col" class="px-5 py-2">{{o.payment.payment_reference_number}}</td>
+            <td scope="col" class="px-5 py-2">{{o.user.username}}</td>
+            <td scope="col" class="px-5 py-2">{{o.address.address}}</td>
+            <td scope="col" class="px-5 py-2">{{o.product.name}}</td>
+            <td scope="col" class="px-5 py-2">{{o.quantity}}</td>
+            <td scope="col" class="px-5 py-2">{{o.subtotal}}</td>
+            <td scope="col" class="px-5 py-2">{{o.status}}</td>
+            {% if o.description %}
+            <td scope="col" class="px-5 py-2" title="{{o.description}}">🔍</td>
+            {% else %}
+            <td scope="col" class="px-5 py-2" title="No description">+</td>
+            {% endif %}
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<section class="my-5 mx-4">
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="hidden" id="query" name="query" value="update-status">
+        <label for="order_id">Change status of order </label>
+        <select id="order_id" name="order_id">
+            {% for o in orders %}
+            <option value="{{o.id}}">{{o.id}}</option>
+            {% endfor %}
+        </select>
+        <label for="status">to </label>
+        <select id="status" name="status">
+            <option value="Menunggu Verifikasi Pembayaran">Menunggu Verifikasi Pembayaran</option>
+            <option value="Pembayaran Terverifikasi">Pembayaran Terverifikasi</option>
+            <option value="Pesanan Sampai di Hub TipSen">Pesanan Sampai di Hub TipSen</option>
+            <option value="Pesanan Dikemas">Pesanan Dikemas</option>
+            <option value="Pesanan Diambil Kurir">Pesanan Diambil Kurir</option>
+            <option value="Pesanan Dalam Perjalanan">Pesanan Dalam Perjalanan</option>
+            <option value="Pesanan Sampai Tujuan">Pesanan Sampai Tujuan</option>
+        </select>
+        <button type="submit" class="btn bg-gray-700">Submit</button>
+    </form>
+</section>
+<section class="my-5 mx-4">
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="hidden" id="query" name="query" value="add-desc">
+        <label for="order_id">Add description to order </label>
+        <select id="order_id" name="order_id">
+            {% for o in orders %}
+            {% if not o.description %}
+            <option value="{{o.id}}">{{o.id}}</option>
+            {% endif %}
+            {% endfor %}
+        </select>
+        <label for="description">with </label>
+        <textarea id="description" name="description" cols="30" rows="5">Sample Description</textarea>
+        <button type="submit" class="btn bg-gray-700">Submit</button>
+    </form>
+</section>
+{% endblock content %}
