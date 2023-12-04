@@ -27,7 +27,7 @@ def verify_paid_order(request, order_id):
     order = Order.objects.filter(user=request.user._wrapped, id=order_id)
     if not order:
         return render(request, "", context={"error": f"Order dengan id {order_id} tidak ditemukan"})
-    order.status = "Terverifikasi"
+    order.status = "Pembayaran Terverifikasi"
 
     return redirect("show_all_payments")
 
