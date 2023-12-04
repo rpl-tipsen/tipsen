@@ -1,61 +1,70 @@
 {% load static %}
-<html lang="en" class="bg-gray-50">
+<html lang="en" data-theme="dark">
 
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://cdn.jsdelivr.net/npm/daisyui@4.4.14/dist/full.min.css" rel="stylesheet" type="text/css" />
-
+  <script src="https://kit.fontawesome.com/649bac7269.js" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap">
+  <style>
+    /* Optionally, you can apply the font to specific elements */
+    body {
+      font-family: 'Poppins', sans-serif;
+    }
+  </style>
   {% block meta %}
   {% endblock meta %}
 </head>
 
-<body class="bg-gray-50">
+<body>
 
-
-  <nav class="navbar bg-white fixed flex flex-row items-center justify-between px-4">
-    <div class="">
-      <a href="{% url 'home' %}">TipSen</a>
+  <div class="navbar fixed top-0 bg-base-100 shadow-xl">
+    <div class="flex-1">
+      <a href="{% url 'home' %}" class="btn btn-ghost text-xl">Tipsen</a>
     </div>
-    <div class="gap-2">
-      {% if request.user.is_authenticated %}
-      <div class="dropdown dropdown-end">
-        <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar">
-          <div class="w-10 rounded-full">
-            <img alt="Tailwind CSS Navbar component"
-              src="https://daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" />
-          </div>
+    {% if request.user.is_authenticated %}
+    <div class="dropdown dropdown-end">
+      <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar">
+        <div class="w-10 rounded-full">
+          <img alt="Tailwind CSS Navbar component"
+            src="https://drive.google.com/uc?id=1AZAXsC9wH1NLc86l5sx1_2rly6McnwF9" />
         </div>
-        <ul class="mt-3 z-[1] p-2 shadow menu menu-sm dropdown-content bg-base-100 rounded-box w-52">
-          <li>
-            <a class="justify-between" href="{% url 'user_profile' %}">
-              Profile
-              <span class="badge">New</span>
-            </a>
-          </li>
-          <li><a>Settings</a></li>
-          <li><a href="{% url 'logout' %}">Logout</a></li>
-        </ul>
-        {% else %}
-        <div>
-          <a href="{% url 'login' %}" class="btn bg-indigo-600 text-white">
-            Login
-          </a>
-          <a href="{% url 'signup' %}" class="btn bg-neutral text-indigo-600 hover:text-white hover:bg-indigo-600 transition-all duration-100">
-            Signup
-          </a>
-        </div>
-        {% endif %}
-       
       </div>
+      <ul tabindex="0" class="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52">
+        <li>
+          <a class="justify-between" href="{% url 'user_profile' %}">
+            Profile
+          </a>
+        </li>
+        <li><a href="{% url 'logout' %}">Logout</a></li>
+      </ul>
     </div>
-  </nav>
+    {% else %}
+    <div class="dropdown dropdown-end">
+      <button class="btn btn-square btn-ghost">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+          class="inline-block w-5 h-5 stroke-current">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z">
+          </path>
+        </svg>
+      </button>
+      <ul tabindex="0" class="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52">
+        <li><a href="{% url 'login' %}">Login</a></li>
+        <li><a href="{% url 'signup' %}">Signup</a></li>
+      </ul>
+    </div>
+    {% endif %}
 
-  <main class="pt-20">
-  {% block content %}
+  </div>
 
-  {% endblock content %}
+  <main class="pt-20 bg-base-200 min-h-screen">
+    {% block content %}
+
+    {% endblock content %}
   </main>
 </body>
+
 </html>

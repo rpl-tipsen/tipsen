@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block meta %}
+<title>Tipsen | All Available Products</title>
+{% endblock meta %}
+
+{% block content %}
+
+<section class="py-10 max-w-5xl mx-auto">
+    <div class="flex justify-center">
+        <a href="{% url 'admin-create' %}"><button class="btn btn-primary">Create</button></a>
+    </div>
+
+    <section class="pt-10 w-full flex flex-wrap justify-center gap-10">
+        {% for product_ in products %}
+        <div class="w-72 bg-base-100 shadow-xl rounded-2xl">
+            <figure><img src="{{product_.image_link}}" alt="{{product_.name}}"
+                    class="w-72 h-72 object-cover rounded-t-2xl shadow-xl" />
+            </figure>
+            <div class="card-body">
+                <div class="h-24">
+                    <h2 class="card-title h-16">{{ product_.name }}</h2>
+                    <p>Rp{{ product_.price }}</p>
+                </div>
+                <div class="card-actions justify-end">
+                    <a href="{% url 'admin-delete' product_id=product_.id %}">
+                        <button class="btn btn-error w-11 h-11"><i class="fa-solid fa-trash text-xl"></i></i></button>
+                    </a>
+                    <a href="{% url 'admin-product' product_id=product_.id %}"><button class="btn btn-info w-11 h-11"><i
+                                class="fa-regular fa-eye text-xl"></i></button></a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </section>
+</section>
+{% endblock content %}
