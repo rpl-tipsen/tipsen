@@ -14,6 +14,7 @@ class Address(models.Model):
     receiver_name = models.CharField(blank=False, max_length=50)
     address = models.TextField(max_length=100)
     city = models.CharField(blank=False)
+    is_active = models.BooleanField(default=True)
 
     phone_number_regex = RegexValidator(
         regex=r"^\+?1?\d{9,15}$",  # Customize the regex based on your requirements
