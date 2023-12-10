@@ -8,7 +8,7 @@ from django.urls import reverse
 @login_required
 def user_profile(request):
     user_profile = UserProfile.objects.get(user=request.user._wrapped)
-    addresses = Address.objects.filter(user=request.user._wrapped)
+    addresses = Address.objects.filter(user=request.user._wrapped, is_active=True)
 
     # print(addresses[0].__dict__)
 
@@ -59,7 +59,7 @@ def create_address(request):
 def update_address(request, address_id: int):
     address = Address.objects.get(id=address_id)
 
-    if not address or address.user_id != request.user._wrapped.id:
+    if not address or address.user_id != request.user._wrapped.id or not address.is_active:
         return render(
             request=request,
             template_name="userprofile/address.html",
@@ -102,7 +102,7 @@ def update_address(request, address_id: int):
 def delete_address(request, address_id):
     address = Address.objects.get(id=address_id)
 
-    if not address and address.user_id != request.user._wrapped.id:
+    if not address and address.user_id != request.user._wrapped.id or not address.is_active:
         return render(
             request=request,
             template_name="userprofile/address.html",
@@ -114,7 +114,8 @@ def delete_address(request, address_id):
             },
         )
 
-    address.delete()
+    address.is_active = False
+    address.save()
     return render(
         request=request,
         template_name="userprofile/profile.html",
