@@ -1,7 +1,7 @@
 from django.shortcuts import redirect, render
 from django.contrib.auth.decorators import login_required
 from userprofile.models import Address
-from .models import Order
+from .models import Order, OrderStatus
 from payment.models import Payment
 from products.models import Product
 from .forms import ImageForm
@@ -31,6 +31,7 @@ def verify_paid_order(request, order_id):
 
     return redirect("show_unverified_payments")
 
+
 @login_required
 def reject_unfully_paid_order(request, order_id):
     user = request.user
@@ -53,10 +54,11 @@ def special_order(request):
     if request.method == "POST":
         product = Product.objects.get(id=3)
         address = Address.objects.get(user=request.user._wrapped, id=int(request.POST.get("address")))
+        status = OrderStatus.objects.get(status="Menunggu Verifikasi")
         payment = handle_payment_creation(request=request)
         Order.objects.create(
             is_special_request=True,
-            status="Menunggu Verifikasi Pembayaran",
+            status=status,
             quantity=1,
             description=f"{request.POST['product_link']}\n\n{request.POST['description']}",
             ongkir=10000,
@@ -74,6 +76,13 @@ def special_order(request):
     return render(
         request=request, template_name="order/special_order.html", context={"addresses": addresses, "banks": banks}
     )
+
+
+@login_required
+def show_my_order(request):
+    orders = Order.objects.filter(user=request.user._wrapped)
+
+    return render(request=request, template_name="order/my_order.html", context={'orders' : orders})
 
 
 def handle_payment_creation(request):
@@ -109,24 +118,25 @@ def handle_payment_creation(request):
         payment.save()
         return payment
 
+
 @login_required
 def manage_orders(request):
     if not request.user.is_admin:
         return redirect("home")
-    
-    orders = Order.objects.all().order_by('id')
+
+    orders = Order.objects.all().order_by("id")
 
     if request.method == "POST":
-        query = request.POST.get('query')
-        order = Order.objects.get(id=request.POST.get('order_id'))
-        
+        query = request.POST.get("query")
+        order = Order.objects.get(id=request.POST.get("order_id"))
+
         if order:
-            if (query == "update-status"):
-                status = request.POST.get('status')
+            if query == "update-status":
+                status = request.POST.get("status")
                 order.status = status
                 order.save()
-            elif (query == "add-desc"):
-                description = request.POST.get('description')
+            elif query == "add-desc":
+                description = request.POST.get("description")
                 order.description = description
                 order.save()
 
