@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+
+{% block meta %}
+<title>
+    Tipsen | Pesanan Khusus
+</title>
+{% endblock meta %}
+
+{% block content %}
+<ul>
+    {% if error %}
+        <li><div class="text-red-500 font-semibold text-[12px]">{{ error|escape }}</div></li>
+    {% endif %}
+</ul>
+
+{% if not orders %}
+    <div class="flex justify-center items-center h-full w-screen">
+        <h1 class="font-bold text-2xl">
+            Belum Ada Order
+        </h1>
+    </div>
+{% else %}
+    <table class="table-auto bg-gray-700 text-center">
+        <thead>
+            <tr>
+                <td scope="col" class="px-5 py-2">Id</td>
+                <td scope="col" class="px-5 py-2">Timestamp</td>
+                <td scope="col" class="px-5 py-2">No. Ref. Pembayaran</td>
+                <td scope="col" class="px-5 py-2">Bukti Pembayaran</td>
+                <td scope="col" class="px-5 py-2">User</td>
+                <td scope="col" class="px-5 py-2">Alamat</td>
+                <td scope="col" class="px-5 py-2">Produk</td>
+                <td scope="col" class="px-5 py-2">Qty.</td>
+                <td scope="col" class="px-5 py-2">Subtotal</td>
+                <td scope="col" class="px-5 py-2">Action</td>
+            </tr>
+        </thead>
+        <tbody>
+            {% for o in orders %}
+            <tr {% if o.is_special_request %} class="bg-gray-800" {% endif %}>
+                <td scope="col" class="px-5 py-2">{{o.id}}</td>
+                <td scope="col" class="px-5 py-2">{{o.timestamp}}</td>
+                <td scope="col" class="px-5 py-2">{{o.payment.payment_reference_number}}</td>
+                <td scope="col" class="px-5 py-2"><img class="mx-auto h-1/2 w-1/2" src="{{o.payment.image_link}}" alt="Gambar bukti pembayaran"/></td>
+                <td scope="col" class="px-5 py-2">{{o.user.username}}</td>
+                <td scope="col" class="px-5 py-2">{{o.address.address}}</td>
+                <td scope="col" class="px-5 py-2">{{o.product.name}}</td>
+                <td scope="col" class="px-5 py-2">{{o.quantity}}</td>
+                <td scope="col" class="px-5 py-2">{{o.subtotal}}</td>
+                <td scope="col" class="px-5 py-2">
+                    <form method="POST" action="{% url 'verify_paid_order' o.id %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn bg-gray-700">Verify</button>
+                    </form>
+                    <form method="POST" action="{% url 'reject_unfully_paid_order' o.id %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn bg-gray-700">Reject</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endif %}
+{% endblock content %}

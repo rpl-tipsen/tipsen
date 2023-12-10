@@ -24,12 +24,12 @@ def verify_paid_order(request, order_id):
     if not user.is_admin:
         return redirect("home")
 
-    order = Order.objects.filter(user=request.user._wrapped, id=order_id)
+    order = Order.objects.filter(id=order_id)
     if not order:
-        return render(request, "", context={"error": f"Order dengan id {order_id} tidak ditemukan"})
-    order.status = "Terverifikasi"
+        return render(request, "payments/verify_payments.html", context={"error": f"Order dengan id {order_id} tidak ditemukan"})
+    order.update(status = "Pembayaran Terverifikasi")
 
-    return redirect("show_all_payments")
+    return redirect("show_unverified_payments")
 
 @login_required
 def reject_unfully_paid_order(request, order_id):
@@ -37,12 +37,12 @@ def reject_unfully_paid_order(request, order_id):
     if not user.is_admin:
         return redirect("home")
     
-    order = Order.objects.filter(user=request.user._wrapped, id=order_id)
+    order = Order.objects.filter(id=order_id)
     if not order:
-        return render(request, "", context={"error": f"Order dengan id {order_id} tidak ditemukan"})
+        return render(request, "payments/verify_payments.html", context={"error": f"Order dengan id {order_id} tidak ditemukan"})
     order.delete()
 
-    return redirect("show_all_payments")
+    return redirect("show_unverified_payments")
 
 
 @login_required
