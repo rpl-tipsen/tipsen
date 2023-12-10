@@ -6,15 +6,13 @@ from .models import Payment
 
 
 @login_required
-def show_all_payments(request):
+def show_unverified_payments(request):
     user = request.user
     if not user.is_admin:
         return redirect("home")
     
     orders = Order.objects.filter(status="Menunggu Verifikasi Pembayaran")
-    if len(orders) == 0:
-        return render(request, "", {"error": "Belum ada order"})
     payments = [order.payment for order in orders]
 
-    return render(request, "", {"orders": orders, "payments": payments})
+    return render(request, "payments/verify_payments.html", {"orders": orders, "payments": payments})
 
