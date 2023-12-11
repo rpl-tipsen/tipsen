@@ -134,8 +134,10 @@ def update_order_status(request, order_id):
         return redirect("home")
     
     order = Order.objects.filter(id=order_id)
-    status = OrderStatus.objects.get(id=request.POST.get("status"))
-    order.update(status=status)
+
+    if order:
+        status = OrderStatus.objects.get(id=request.POST.get("status"))
+        order.update(status=status)
 
     return redirect("manage_orders")
 
@@ -145,7 +147,9 @@ def add_order_description(request, order_id):
         return redirect("home")
     
     order = Order.objects.filter(id=order_id)
-    description = request.POST.get("description")
-    order.update(description=description)
+
+    if order:
+        description = request.POST.get("description")
+        order.update(description=description)
     
     return redirect("manage_orders")
