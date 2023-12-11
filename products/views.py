@@ -135,13 +135,10 @@ def order_product(request, product_id):
                         },
                     )
                 quantity = first_form.cleaned_data["quantity"]
-                total_price = product.price * quantity
-                print(total_price, quantity)
 
                 # Save order data in session
                 request.session["address_id"] = address_id
                 request.session["quantity"] = quantity
-                request.session["total_price"] = total_price
                 return render(
                     request,
                     "products/form-after-payment.html",
@@ -166,10 +163,11 @@ def order_product(request, product_id):
             second_form = OrderSecondForm(request.POST)
             if second_form.is_valid():
                 try:
-                    # Retrieve order data from session
                     address_id = request.session.get("address_id")
                     quantity = request.session.get("quantity")
-                    total_price = request.session.get("total_price")
+
+                    delivery_fee = 2000  # can be changed later to be dynamic
+                    total_price = product.price * quantity + delivery_fee
 
                     address = Address.objects.get(id=address_id)
                     if not address or address.user_id != request.user._wrapped.id:
@@ -199,7 +197,6 @@ def order_product(request, product_id):
 
                     del request.session["address_id"]
                     del request.session["quantity"]
-                    del request.session["total_price"]
 
                     return redirect("my_order")
                 except Exception as e:
