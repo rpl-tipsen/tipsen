@@ -27,11 +27,14 @@
     </div>
     {% if request.user.is_authenticated %}
     {% if request.user.is_admin %}
-    <a class="text-gray-100 p-4 hover:bg-neutral hover:text-blue-500 transition-all duration-100" href="{% url 'my_order' %}">
-      Verifikasi
+    <a class="text-gray-100 p-4 hover:bg-neutral hover:text-blue-500 transition-all duration-100" href="{% url 'show_unverified_payments' %}">
+      Verifikasi Pembayaran
     </a>
-    <a class="text-gray-100 p-4 hover:bg-neutral hover:text-blue-500 transition-all duration-100" href="{% url 'my_order' %}">
-      Pesanan
+    <a class="text-gray-100 p-4 hover:bg-neutral hover:text-blue-500 transition-all duration-100" href="{% url 'admin-products' %}">
+      Kelola Produk
+    </a>
+    <a class="text-gray-100 p-4 hover:bg-neutral hover:text-blue-500 transition-all duration-100" href="{% url 'manage_orders' %}">
+      Kelola Pesanan
     </a>
     {% else %}
     <a class="text-gray-100 p-4 hover:bg-neutral hover:text-blue-500 transition-all duration-100" href="https://wa.me/+6282828909456">
