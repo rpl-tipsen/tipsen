@@ -214,6 +214,7 @@ def order_product(request, product_id):
                             "addresses": addresses,
                             "exception_error": {e},
                             "banks": banks,
+                            "total_price": total_price,
                         },
                     )
             else:
@@ -226,6 +227,7 @@ def order_product(request, product_id):
                         "addresses": addresses,
                         "form": OrderSecondForm,
                         "banks": banks,
+                        "total_price": total_price,
                     },
                 )
 
