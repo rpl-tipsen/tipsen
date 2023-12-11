@@ -7,11 +7,36 @@
 {% endblock meta %}
 
 {% block content %}
-    <div class="login w-full flex flex-col items-center py-4 bg-gray-50 dark:bg-gray-900">
+    <div class="login w-full flex flex-col justify-center items-center py-4 bg-gray-50 dark:bg-gray-900 space-y-4">
         <a href="#" class="flex items-center mb-6 text-2xl font-semibold text-gray-900 dark:text-white">
             <img class="w-8 h-8 mr-2" src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/logo.svg" alt="logo">
             Memesan {{product.name}}
         </a>
+        <div class="collapse collapse-arrow bg-base-200 w-1/2 p-2 z-0">
+            <input type="radio" name="my-accordion-2" checked="checked" /> 
+            <div class="collapse-title text-xl font-medium">
+                Pilihan Rekening Pembayaran
+            </div>
+            <div class="collapse-content mx-4"> 
+                <ul class="list-disc">
+                    <li>BCA - 1234567890</li>
+                    <li>Mandiri - 2345678901</li>
+                    <li>BNI - 3456789012</li>
+                </ul>
+            </div>
+        </div>
+        <div class="collapse collapse-arrow bg-base-200 w-1/2 p-2 z-0">
+            <input type="radio" name="my-accordion-2" /> 
+            <div class="collapse-title text-xl font-medium">
+                Cara Membayar
+            </div>
+            <div class="collapse-content mx-4"> 
+              <ol class="list-decimal">
+                <li>Lakukan transfer kepada salah satu pilihan rekening yang tersedia.</li>
+                <li>Cantumkan <div class="inline font-bold">nomor referensi pembayaran</div> serta <div class="inline font-bold">hasil screenshot bukti pembayaran</div> Anda.</li>
+              </ol>
+            </div>
+          </div>
         <div
             class="h-full w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
             <div class="p-6 space-y-4 md:space-y-6 sm:p-8">
@@ -22,8 +47,7 @@
                             class="block mb-2  font-medium text-gray-900 dark:text-white">Deskripsi</label>
                         <textarea name="description" id="description"
                             class="bg-gray-50 border border-gray-300 text-gray-900 sm: rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                            placeholder="warna hijau, include bonus" required="">
-                        </textarea>
+                            placeholder="warna hijau, include bonus" required=""></textarea>
                     </div>
 
                     <div>
@@ -37,12 +61,17 @@
 
                     <div>
                         <label for="id_payment_reference_number" class="block mb-2  font-medium text-gray-900 dark:text-white">Nomor Referensi Pembayaran</label>
-                        <input type="text" name="payment_reference_number" id="id_payment_reference_number">
+                        <input type="text" name="payment_reference_number" id="id_payment_reference_number"
+                        class="bg-gray-50 border border-gray-300 text-gray-900 sm: rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                        >
 
-                        <label for="id_image" class="block mb-2  font-medium text-gray-900 dark:text-white">Upload Bukti Pembayaran</label>
+                    </div>
+                    
+                    <div>
+                        <label for="id_image" class="block mb-2 font-medium text-gray-900 dark:text-white">Upload Bukti Pembayaran</label>
                         <input type="file" name="image" id="id_image" accept="image/jpeg, image/png">
                     </div>
-    
+
                     <ul>
                         {% if form.errors %}
                             {% for field in form %}
