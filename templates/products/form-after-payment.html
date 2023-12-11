@@ -12,6 +12,7 @@
             <img class="w-8 h-8 mr-2" src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/logo.svg" alt="logo">
             Memesan {{product.name}}
         </a>
+        <div class="text-xl font-bold">Anda perlu membayar sebanyak Rp. {{total_price}}</div>
         <div class="collapse collapse-arrow bg-base-200 w-1/2 p-2 z-0">
             <input type="radio" name="my-accordion-2" checked="checked" /> 
             <div class="collapse-title text-xl font-medium">
@@ -69,7 +70,7 @@
                     
                     <div>
                         <label for="id_image" class="block mb-2 font-medium text-gray-900 dark:text-white">Upload Bukti Pembayaran</label>
-                        <input type="file" name="image" id="id_image" accept="image/jpeg, image/png" required>
+                        <input type="file" name="image" id="id_image" accept="image/jpeg, image/png">
                     </div>
 
                     <ul>
@@ -82,6 +83,9 @@
                             {% for error in form.non_field_errors %}
                                 <li><div class="text-red-500 font-semibold text-[12px]">{{ error|escape }}</div></li>
                             {% endfor %}
+                        {% endif %}
+                        {% if exception_error %}
+                                    <li><div class="text-red-500 font-semibold text-[12px]">{{ exception_error|escape }}</div></li>
                         {% endif %}
                     </ul>
 
