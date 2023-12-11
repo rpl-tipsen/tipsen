@@ -57,7 +57,7 @@ def admin_product(request, product_id):
 def admin_create(request):
     if not request.user.is_admin:
         return redirect("home")
-    
+
     if request.method == "POST":
         form = ImageForm(request.POST, request.FILES)
         if form.is_valid():
@@ -77,7 +77,7 @@ def admin_create(request):
                 image_link = f"{SUPABASE['url']}/storage/v1/object/public/{BUCKET_NAME_2}/{random_filename}"
             else:
                 return "Failed to create payment"
-            
+
             Product.objects.create(
                 name=request.POST["name"],
                 price=request.POST["price"],
@@ -85,25 +85,26 @@ def admin_create(request):
                 image_link=image_link,
             ).save()
 
-            return render(request, "products/admin-create.html", context={"success": True})
+            return render(
+                request, "products/admin-create.html", context={"success": True}
+            )
 
     return render(request, "products/admin-create.html")
+
 
 @login_required
 def admin_delete(request, product_id):
     if not request.user.is_admin:
         return redirect("home")
-    
+
     product = Product.objects.get(id=product_id)
     if not product:
         return redirect("home")
-    
+
     sb.storage.from_(BUCKET_NAME_2).remove(product.image_link.split("/")[-1])
     product.delete()
-    
-    return redirect("admin-products")
-    
 
+    return redirect("admin-products")
 
 
 @login_required
@@ -200,8 +201,7 @@ def order_product(request, product_id):
                     del request.session["quantity"]
                     del request.session["total_price"]
 
-                    # TODO: ganti redirect ke "pesanan saya"
-                    return redirect("home")
+                    return redirect("my_order")
                 except Exception as e:
                     return render(
                         request,
@@ -231,6 +231,7 @@ def order_product(request, product_id):
         "products/form-before-payment.html",
         context={"product": product, "addresses": addresses},
     )
+
 
 def handle_payment_creation(request):
     form = ImageForm(request.POST, request.FILES)
