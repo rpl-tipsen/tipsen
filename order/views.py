@@ -125,19 +125,26 @@ def manage_orders(request):
         return redirect("home")
 
     orders = Order.objects.all().order_by("id")
-
-    if request.method == "POST":
-        query = request.POST.get("query")
-        order = Order.objects.get(id=request.POST.get("order_id"))
-
-        if order:
-            if query == "update-status":
-                status = request.POST.get("status")
-                order.status = status
-                order.save()
-            elif query == "add-desc":
-                description = request.POST.get("description")
-                order.description = description
-                order.save()
-
     return render(request=request, template_name="order/manage_orders.html", context={"orders": orders})
+
+@login_required
+def update_order_status(request, order_id):
+    if not request.user.is_admin:
+        return redirect("home")
+    
+    order = Order.objects.filter(id=order_id)
+    status = OrderStatus.objects.get(id=request.POST.get("status"))
+    order.update(status=status)
+
+    return redirect("manage_orders")
+
+@login_required
+def add_order_description(request, order_id):
+    if not request.user.is_admin:
+        return redirect("home")
+    
+    order = Order.objects.filter(id=order_id)
+    description = request.POST.get("description")
+    order.update(description=description)
+    
+    return redirect("manage_orders")

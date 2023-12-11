@@ -7,6 +7,7 @@
 {% endblock meta %}
 
 {% block content %}
+<section class="my-5 mx-4 content-center">
 <table class="table-auto bg-gray-700 text-center">
     <thead>
         <tr>
@@ -31,54 +32,55 @@
             <td scope="col" class="px-5 py-2">{{o.product.name}}</td>
             <td scope="col" class="px-5 py-2">{{o.quantity}}</td>
             <td scope="col" class="px-5 py-2">{{o.subtotal}}</td>
-            <td scope="col" class="px-5 py-2">{{o.status}}</td>
+            <td scope="col" class="px-5 py-2">
+                <label for="update-status-{{o.id}}">{{o.status.status}} ▼</label>
+                <input type="checkbox" id="update-status-{{o.id}}" class="modal-toggle" />
+                <div class="modal" role="dialog">
+                    <div class="modal-box">
+                        <h3 class="font-bold text-lg">Update Status</h3>
+                        <form method="POST" enctype="multipart/form-data" action="{% url 'update_order_status' o.id %}">
+                            {% csrf_token %}
+                            <label for="status" class="py-4">Change status of order {{o.id}} to </label>
+                            <select id="status" name="status">
+                                <option value=1>Menunggu Verifikasi</option>
+                                <option value=2>Sedang Diproses</option>
+                                <option value=3>Dalam Pengiriman</option>
+                                <option value=4>Selesai</option>
+                                <option value=5>Ditolak</option>
+                            </select>
+                            <button type="submit" class="btn bg-gray-700">Submit</button>
+                        </form>
+                        <div class="modal-action">
+                            <label for="update-status-{{o.id}}" class="btn">Cancel</label>
+                        </div>
+                    </div>
+                </div>
+            </td>
             {% if o.description %}
             <td scope="col" class="px-5 py-2" title="{{o.description}}">🔍</td>
             {% else %}
-            <td scope="col" class="px-5 py-2" title="No description">+</td>
+            <td scope="col" class="px-5 py-2">
+                <label for="add-desc-{{o.id}}">➕</label>
+                <input type="checkbox" id="add-desc-{{o.id}}" class="modal-toggle" />
+                <div class="modal" role="dialog">
+                <div class="modal-box">
+                    <h3 class="font-bold text-lg">Add Description</h3>
+                    <form method="POST" enctype="multipart/form-data" action="{% url 'add_order_description' o.id %}">
+                        {% csrf_token %}
+                        <label for="status" class="py-4">Add description of order {{o.id}} as </label>
+                        <textarea id="description" name="description" cols="30" rows="5">Sample Description</textarea>
+                        <button type="submit" class="btn bg-gray-700">Submit</button>
+                    </form>
+                    <div class="modal-action">
+                        <label for="add-desc-{{o.id}}" class="btn">Cancel</label>
+                    </div>
+                </div>
+                </div>
+            </td>
             {% endif %}
         </tr>
         {% endfor %}
     </tbody>
 </table>
-<section class="my-5 mx-4">
-    <form method="POST" enctype="multipart/form-data">
-        {% csrf_token %}
-        <input type="hidden" id="query" name="query" value="update-status">
-        <label for="order_id">Change status of order </label>
-        <select id="order_id" name="order_id">
-            {% for o in orders %}
-            <option value="{{o.id}}">{{o.id}}</option>
-            {% endfor %}
-        </select>
-        <label for="status">to </label>
-        <select id="status" name="status">
-            <option value="Menunggu Verifikasi Pembayaran">Menunggu Verifikasi Pembayaran</option>
-            <option value="Pembayaran Terverifikasi">Pembayaran Terverifikasi</option>
-            <option value="Pesanan Sampai di Hub TipSen">Pesanan Sampai di Hub TipSen</option>
-            <option value="Pesanan Dikemas">Pesanan Dikemas</option>
-            <option value="Pesanan Diambil Kurir">Pesanan Diambil Kurir</option>
-            <option value="Pesanan Dalam Perjalanan">Pesanan Dalam Perjalanan</option>
-            <option value="Pesanan Sampai Tujuan">Pesanan Sampai Tujuan</option>
-        </select>
-        <button type="submit" class="btn bg-gray-700">Submit</button>
-    </form>
-</section>
-<section class="my-5 mx-4">
-    <form method="POST" enctype="multipart/form-data">
-        {% csrf_token %}
-        <input type="hidden" id="query" name="query" value="add-desc">
-        <label for="order_id">Add description to order </label>
-        <select id="order_id" name="order_id">
-            {% for o in orders %}
-            {% if not o.description %}
-            <option value="{{o.id}}">{{o.id}}</option>
-            {% endif %}
-            {% endfor %}
-        </select>
-        <label for="description">with </label>
-        <textarea id="description" name="description" cols="30" rows="5">Sample Description</textarea>
-        <button type="submit" class="btn bg-gray-700">Submit</button>
-    </form>
 </section>
 {% endblock content %}
