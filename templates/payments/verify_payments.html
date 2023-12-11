@@ -32,7 +32,9 @@
                 <td scope="col" class="px-5 py-2">Produk</td>
                 <td scope="col" class="px-5 py-2">Qty.</td>
                 <td scope="col" class="px-5 py-2">Subtotal</td>
+                <td scope="col" class="px-5 py-2">Call Customer</td>
                 <td scope="col" class="px-5 py-2">Action</td>
+                
             </tr>
         </thead>
         <tbody>
@@ -48,6 +50,10 @@
                 <td scope="col" class="px-5 py-2">{{o.quantity}}</td>
                 <td scope="col" class="px-5 py-2">{{o.subtotal}}</td>
                 <td scope="col" class="px-5 py-2">
+                <a href="https://wa.me/{{o.address.phone_number}}" class="btn bg-gray-700">
+                    Message on WhatsApp
+                </a> </td>
+                <td scope="col" class="px-5 py-2">
                     <form method="POST" action="{% url 'verify_paid_order' o.id %}">
                         {% csrf_token %}
                         <button type="submit" class="btn bg-gray-700">Verify</button>
@@ -57,6 +63,7 @@
                         <button type="submit" class="btn bg-gray-700">Reject</button>
                     </form>
                 </td>
+                
             </tr>
             {% endfor %}
         </tbody>
