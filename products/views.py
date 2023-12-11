@@ -1,10 +1,9 @@
-from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
 from payment.models import Payment
 from .models import Product
 from .forms import *
-from order.models import Order
+from order.models import Order, OrderStatus
 from userprofile.models import Address
 from order.forms import ImageForm
 from io import BufferedReader
@@ -185,11 +184,11 @@ def order_product(request, product_id):
                         )
 
                     payment = handle_payment_creation(request)
-
+                    order_status = OrderStatus.objects.get(status="Menunggu Verifikasi")
                     Order.objects.create(
                         product=product,
                         quantity=quantity,
-                        status="Menunggu Verifikasi Pembayaran",
+                        status=order_status,
                         description="",
                         address=address,
                         subtotal=total_price,

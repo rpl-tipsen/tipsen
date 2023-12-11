@@ -1,7 +1,7 @@
 from django.shortcuts import redirect, render
 from django.contrib.auth.decorators import login_required
 from userprofile.models import Address
-from .models import Order
+from .models import Order, OrderStatus
 from payment.models import Payment
 from products.models import Product
 from .forms import ImageForm
@@ -24,12 +24,13 @@ def verify_paid_order(request, order_id):
     if not user.is_admin:
         return redirect("home")
 
-    order = Order.objects.filter(user=request.user._wrapped, id=order_id)
+    order = Order.objects.filter(id=order_id)
     if not order:
-        return render(request, "", context={"error": f"Order dengan id {order_id} tidak ditemukan"})
-    order.status = "Terverifikasi"
+        return render(request, "payments/verify_payments.html", context={"error": f"Order dengan id {order_id} tidak ditemukan"})
+    order.update(status = "Pembayaran Terverifikasi")
 
-    return redirect("show_all_payments")
+    return redirect("show_unverified_payments")
+
 
 @login_required
 def reject_unfully_paid_order(request, order_id):
@@ -37,12 +38,12 @@ def reject_unfully_paid_order(request, order_id):
     if not user.is_admin:
         return redirect("home")
     
-    order = Order.objects.filter(user=request.user._wrapped, id=order_id)
+    order = Order.objects.filter(id=order_id)
     if not order:
-        return render(request, "", context={"error": f"Order dengan id {order_id} tidak ditemukan"})
+        return render(request, "payments/verify_payments.html", context={"error": f"Order dengan id {order_id} tidak ditemukan"})
     order.delete()
 
-    return redirect("show_all_payments")
+    return redirect("show_unverified_payments")
 
 
 @login_required
@@ -53,10 +54,11 @@ def special_order(request):
     if request.method == "POST":
         product = Product.objects.get(id=3)
         address = Address.objects.get(user=request.user._wrapped, id=int(request.POST.get("address")))
+        status = OrderStatus.objects.get(status="Menunggu Verifikasi")
         payment = handle_payment_creation(request=request)
         Order.objects.create(
             is_special_request=True,
-            status="Menunggu Verifikasi Pembayaran",
+            status=status,
             quantity=1,
             description=f"{request.POST['product_link']}\n\n{request.POST['description']}",
             ongkir=10000,
@@ -74,6 +76,13 @@ def special_order(request):
     return render(
         request=request, template_name="order/special_order.html", context={"addresses": addresses, "banks": banks}
     )
+
+
+@login_required
+def show_my_order(request):
+    orders = Order.objects.filter(user=request.user._wrapped)
+
+    return render(request=request, template_name="order/my_order.html", context={'orders' : orders})
 
 
 def handle_payment_creation(request):
@@ -109,25 +118,33 @@ def handle_payment_creation(request):
         payment.save()
         return payment
 
+
 @login_required
 def manage_orders(request):
     if not request.user.is_admin:
         return redirect("home")
-    
-    orders = Order.objects.all().order_by('id')
 
-    if request.method == "POST":
-        query = request.POST.get('query')
-        order = Order.objects.get(id=request.POST.get('order_id'))
-        
-        if order:
-            if (query == "update-status"):
-                status = request.POST.get('status')
-                order.status = status
-                order.save()
-            elif (query == "add-desc"):
-                description = request.POST.get('description')
-                order.description = description
-                order.save()
-
+    orders = Order.objects.all().order_by("id")
     return render(request=request, template_name="order/manage_orders.html", context={"orders": orders})
+
+@login_required
+def update_order_status(request, order_id):
+    if not request.user.is_admin:
+        return redirect("home")
+    
+    order = Order.objects.filter(id=order_id)
+    status = OrderStatus.objects.get(id=request.POST.get("status"))
+    order.update(status=status)
+
+    return redirect("manage_orders")
+
+@login_required
+def add_order_description(request, order_id):
+    if not request.user.is_admin:
+        return redirect("home")
+    
+    order = Order.objects.filter(id=order_id)
+    description = request.POST.get("description")
+    order.update(description=description)
+    
+    return redirect("manage_orders")
