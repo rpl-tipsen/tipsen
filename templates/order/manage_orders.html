@@ -1,16 +1,20 @@
 {% extends 'base.html' %}
+{% load humanize %}
 
 {% block meta %}
 <title>
-    Tipsen | Pesanan Khusus
+    Tipsen | Kelola Pesanan
 </title>
 {% endblock meta %}
 
 {% block content %}
-<section class="my-5 mx-4 content-center">
+<section class="pb-10 max-w-max mx-auto">
 <table class="table-auto bg-gray-700 text-center">
     <thead>
-        <tr>
+        <tr class="bg-transparent">
+            <td scope="col" class="px-5 py-5 bg-base-200 text-3xl font-bold" colspan="10">Daftar Pesanan</td>
+        </tr>
+        <tr class="bg-gray-800" >
             <td scope="col" class="px-5 py-2">Timestamp</td>
             <td scope="col" class="px-5 py-2">Payment No.</td>
             <td scope="col" class="px-5 py-2">User</td>
@@ -18,41 +22,42 @@
             <td scope="col" class="px-5 py-2">Produk</td>
             <td scope="col" class="px-5 py-2">Qty.</td>
             <td scope="col" class="px-5 py-2">Subtotal</td>
-            <td scope="col" class="px-5 py-2">Status</td>
+            <td scope="col" class="px-5 py-2" colspan="2">Status</td>
             <td scope="col" class="px-5 py-2">Desc.</td>
         </tr>
     </thead>
     <tbody>
         {% for o in orders %}
-        <tr {% if o.is_special_request %} class="bg-gray-800" {% endif %}>
+        <tr class="border-t-2 border-slate-500">
             <td scope="col" class="px-5 py-2">{{o.timestamp}}</td>
-            <td scope="col" class="px-5 py-2">{{o.payment.payment_reference_number}}</td>
+            <td scope="col" class="px-5 py-2 bg-gray-600">{{o.payment.payment_reference_number}}</td>
             <td scope="col" class="px-5 py-2">{{o.user.username}}</td>
-            <td scope="col" class="px-5 py-2">{{o.address.address}}</td>
+            <td scope="col" class="px-5 py-2 bg-gray-600">{{o.address.address}}</td>
             <td scope="col" class="px-5 py-2">{{o.product.name}}</td>
-            <td scope="col" class="px-5 py-2">{{o.quantity}}</td>
-            <td scope="col" class="px-5 py-2">{{o.subtotal}}</td>
-            <td scope="col" class="px-5 py-2">
-                <label for="update-status-{{o.id}}">{{o.status.status}} ▼</label>
+            <td scope="col" class="px-5 py-2 bg-gray-600">{{o.quantity}}</td>
+            <td scope="col" class="px-5 py-2" >Rp {{o.subtotal|intcomma}}</td>
+            <td scope="col" class="pl-5 pr-2 py-2 bg-gray-600">{{o.status.status}}</td>
+            <td scope="col" class="pr-5 pl-2 py-2 bg-gray-600">
+                <label for="update-status-{{o.id}}">▼</label>
                 <input type="checkbox" id="update-status-{{o.id}}" class="modal-toggle" />
                 <div class="modal" role="dialog">
                     <div class="modal-box">
                         <h3 class="font-bold text-lg">Update Status</h3>
                         <form method="POST" enctype="multipart/form-data" action="{% url 'update_order_status' o.id %}">
                             {% csrf_token %}
-                            <label for="status" class="py-4">Change status of order {{o.id}} to </label>
-                            <select id="status" name="status">
-                                <option value=1>Menunggu Verifikasi</option>
-                                <option value=2>Sedang Diproses</option>
-                                <option value=3>Dalam Pengiriman</option>
-                                <option value=4>Selesai</option>
-                                <option value=5>Ditolak</option>
-                            </select>
+                            <div class="my-5">
+                                <label for="status" class="py-4">Status: </label>
+                                <select id="status" name="status" class="border-2 border-slate-500 p-2">
+                                    <option value=1>Menunggu Verifikasi</option>
+                                    <option value=2>Sedang Diproses</option>
+                                    <option value=3>Dalam Pengiriman</option>
+                                    <option value=4>Selesai</option>
+                                    <option value=5>Ditolak</option>
+                                </select>
+                            </div>
                             <button type="submit" class="btn bg-gray-700">Submit</button>
-                        </form>
-                        <div class="modal-action">
                             <label for="update-status-{{o.id}}" class="btn">Cancel</label>
-                        </div>
+                        </form>
                     </div>
                 </div>
             </td>
@@ -67,13 +72,16 @@
                     <h3 class="font-bold text-lg">Add Description</h3>
                     <form method="POST" enctype="multipart/form-data" action="{% url 'add_order_description' o.id %}">
                         {% csrf_token %}
-                        <label for="status" class="py-4">Add description of order {{o.id}} as </label>
-                        <textarea id="description" name="description" cols="30" rows="5">Sample Description</textarea>
+                        <div class="mt-5 mb-2">
+                            <label for="status" class="py-4">Description: </label>
+                        </div>
+                        <div class="mb-5 mt-2">
+                            <textarea id="description" name="description" cols="30" rows="5" style="resize:none" class="border-2 border-slate-500 p-2" placeholder="Description" maxlength="150"></textarea>
+                        </div>
                         <button type="submit" class="btn bg-gray-700">Submit</button>
-                    </form>
-                    <div class="modal-action">
                         <label for="add-desc-{{o.id}}" class="btn">Cancel</label>
-                    </div>
+                        </div>
+                    </form>
                 </div>
                 </div>
             </td>
