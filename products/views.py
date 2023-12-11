@@ -136,9 +136,13 @@ def order_product(request, product_id):
                     )
                 quantity = first_form.cleaned_data["quantity"]
 
+                delivery_fee = 2000  # can be changed later to be dynamic
+                total_price = product.price * quantity + delivery_fee
+
                 # Save order data in session
                 request.session["address_id"] = address_id
                 request.session["quantity"] = quantity
+                request.session["total_price"] = total_price
                 return render(
                     request,
                     "products/form-after-payment.html",
@@ -146,6 +150,7 @@ def order_product(request, product_id):
                         "product": product,
                         "addresses": addresses,
                         "banks": banks,
+                        "total_price": total_price,
                     },
                 )
             else:
@@ -165,9 +170,8 @@ def order_product(request, product_id):
                 try:
                     address_id = request.session.get("address_id")
                     quantity = request.session.get("quantity")
-
-                    delivery_fee = 2000  # can be changed later to be dynamic
-                    total_price = product.price * quantity + delivery_fee
+                    total_price = request.session.get("total_price")
+                    print(total_price)
 
                     address = Address.objects.get(id=address_id)
                     if not address or address.user_id != request.user._wrapped.id:
@@ -184,6 +188,7 @@ def order_product(request, product_id):
 
                     payment = handle_payment_creation(request)
                     order_status = OrderStatus.objects.get(status="Menunggu Verifikasi")
+                    print(order_status)
                     Order.objects.create(
                         product=product,
                         quantity=quantity,
@@ -200,6 +205,7 @@ def order_product(request, product_id):
 
                     return redirect("my_order")
                 except Exception as e:
+                    print(e)
                     return render(
                         request,
                         "products/form-after-payment.html",
@@ -261,6 +267,7 @@ def handle_payment_creation(request):
             bank=request.POST["bank"],
             image_link=image_link,
         )
+        print(payment)
 
         payment.save()
         return payment
